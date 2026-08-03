@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALQUIPC · Facturación de alquiler de equipos</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- CONTROL DE ACCESO DE OPERADOR -->
+  <div class="gate" id="gate">
+    <div class="gate__card">
+      <div class="brand__mark gate__mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="30" height="30">
+          <rect x="6" y="9" width="36" height="23" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.4"/>
+          <line x1="16" y1="39" x2="32" y2="39" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <line x1="24" y1="32" x2="24" y2="39" stroke="currentColor" stroke-width="2.4"/>
+        </svg>
+      </div>
+      <h2>Acceso de operador</h2>
+      <p>Ingresa tu código de operador para abrir el sistema de facturación de ALQUIPC.</p>
+      <form id="gateForm">
+        <input type="password" id="gateCode" placeholder="Código de operador" autocomplete="off" required>
+        <button type="submit" class="btn btn--primary">Ingresar</button>
+      </form>
+      <p id="gateError" class="form-error" role="alert" hidden>Código incorrecto. Solicítalo a tu supervisor.</p>
+      <p class="gate__hint">Demo: código <code>ALQUIPC2024</code></p>
+    </div>
+  </div>
+
+  <div class="wrap" id="app" hidden>
+
+    <header class="brand">
+      <div class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="34" height="34">
+          <rect x="6" y="9" width="36" height="23" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.4"/>
+          <line x1="16" y1="39" x2="32" y2="39" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <line x1="24" y1="32" x2="24" y2="39" stroke="currentColor" stroke-width="2.4"/>
+        </svg>
+      </div>
+      <div>
+        <p class="brand__eyebrow">Sistema de facturación</p>
+        <h1 class="brand__name">ALQUIPC</h1>
+      </div>
+      <p class="brand__tagline">Alquiler de equipos de cómputo portátiles — tarifa por día</p>
+    </header>
+
+    <main class="grid">
+
+      <!-- FORMULARIO -->
+      <section class="panel" aria-labelledby="form-title">
+        <h2 id="form-title" class="panel__title">Nueva solicitud</h2>
+        <p class="panel__hint">La operadora completa estos datos mientras atiende la llamada del cliente.</p>
+
+        <form id="rentalForm" novalidate>
+
+          <fieldset class="field">
+            <legend>Opción de alquiler</legend>
+            <div class="options">
+              <label class="option">
+                <input type="radio" name="opcion" value="1" checked>
+                <span class="option__num">1</span>
+                <span class="option__text">Dentro de la ciudad</span>
+              </label>
+              <label class="option">
+                <input type="radio" name="opcion" value="2">
+                <span class="option__num">2</span>
+                <span class="option__text">Fuera de la ciudad <em>(+5% domicilio)</em></span>
+              </label>
+              <label class="option">
+                <input type="radio" name="opcion" value="3">
+                <span class="option__num">3</span>
+                <span class="option__text">Dentro del establecimiento <em>(−5% descuento)</em></span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="equipos">Número de equipos</label>
+              <input type="number" id="equipos" min="2" step="1" value="2" required>
+              <span class="field__note">Mínimo 2 equipos por solicitud</span>
+            </div>
+            <div class="field">
+              <label for="diasIniciales">Días iniciales de alquiler</label>
+              <input type="number" id="diasIniciales" min="1" step="1" value="1" required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="diasAdicionales">Días adicionales (opcional)</label>
+            <input type="number" id="diasAdicionales" min="0" step="1" value="0">
+            <span class="field__note">Descuento del 2% por día adicional, con tope del 30% para proteger el margen de la empresa</span>
+          </div>
+
+          <div class="field">
+            <label for="correo">Correo del cliente</label>
+            <input type="email" id="correo" placeholder="cliente@correo.com" required>
+          </div>
+
+          <p id="formError" class="form-error" role="alert" hidden></p>
+
+          <button type="submit" class="btn btn--primary">Calcular factura</button>
+        </form>
+      </section>
+
+      <!-- RESULTADO -->
+      <section class="panel panel--result" aria-labelledby="result-title" id="resultPanel" hidden>
+        <h2 id="result-title" class="panel__title">Resumen de facturación</h2>
+
+        <div class="client-id">
+          <span>Id-cliente asignado</span>
+          <strong id="idCliente">—</strong>
+        </div>
+
+        <dl class="summary">
+          <div class="summary__row">
+            <dt>Opción de alquiler</dt>
+            <dd id="rOpcion">—</dd>
+          </div>
+          <div class="summary__row">
+            <dt>Equipos alquilados</dt>
+            <dd id="rEquipos">—</dd>
+          </div>
+          <div class="summary__row">
+            <dt>Días iniciales</dt>
+            <dd id="rDiasIniciales">—</dd>
+          </div>
+          <div class="summary__row">
+            <dt>Días adicionales</dt>
+            <dd id="rDiasAdicionales">—</dd>
+          </div>
+          <div class="summary__row">
+            <dt>Ajuste por opción</dt>
+            <dd id="rAjusteOpcion">—</dd>
+          </div>
+          <div class="summary__row">
+            <dt>Descuento por días adicionales</dt>
+            <dd id="rDescuentoAdicional">—</dd>
+          </div>
+        </dl>
+
+        <div class="total">
+          <span>Valor total a cancelar</span>
+          <strong id="rTotal">$0</strong>
+        </div>
+
+        <button type="button" class="btn btn--secondary" id="sendMailBtn">
+          Enviar resumen por correo
+        </button>
+        <p id="sendConfirm" class="send-confirm" role="status" hidden>
+          Se abrió tu gestor de correo con el resumen listo para enviar a <span id="sendConfirmMail"></span>.
+        </p>
+      </section>
+
+    </main>
+
+    <footer class="footnote">
+      No se genera recibo impreso: los datos se muestran en pantalla y se envían por correo electrónico.
+    </footer>
+  </div>
+
+<script src="script.js"></script>
+</body>
+</html>
